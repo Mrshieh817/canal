@@ -565,7 +565,7 @@ public class LogEventConvert extends AbstractCanalLifeCycle implements BinlogPar
                 RowData.Builder rowDataBuilder = RowData.newBuilder();
                 if (EventType.INSERT == eventType) {
                     // insert的记录放在before字段中
-                    tableError |= pparseOneRow(rowDataBuilder, event, buffer, columns, true, tableMeta);
+                    tableError |= parseOneRow(rowDataBuilder, event, buffer, columns, true, tableMeta);
                 } else if (EventType.DELETE == eventType) {
                     // delete的记录放在before字段中
                     tableError |= parseOneRow(rowDataBuilder, event, buffer, columns, false, tableMeta);
