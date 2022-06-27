@@ -8,7 +8,7 @@ esMapping:
   upsert: true
   _id: id
 #  pk: id
-  sql: "SELECT a.id as number,a.`name` as skuName,a.update_time as createTime,'666' as _class from sys_user a "
+  sql: "SELECT  a.id as id, a.id as number,a.`name` as skuName,a.update_time as createTime,'666' as _class from sys_user a "
 #  objFields:
 #    _labels: array:;
   etlCondition: "where a.update_time>={}"
