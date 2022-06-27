@@ -114,6 +114,8 @@ public class ESSyncConfig implements AdapterConfig {
 
         private SchemaItem                   schemaItem;                             // sql解析结果模型
 
+        private String                       mappings;
+
         public String get_index() {
             return _index;
         }
@@ -224,6 +226,14 @@ public class ESSyncConfig implements AdapterConfig {
 
         public void setSchemaItem(SchemaItem schemaItem) {
             this.schemaItem = schemaItem;
+        }
+
+        public String getMappings() {
+            return mappings;
+        }
+
+        public void setMappings(String mappings) {
+            this.mappings = mappings;
         }
     }
 

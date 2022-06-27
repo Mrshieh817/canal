@@ -27,7 +27,7 @@ public class ESConnectionTest {
 
     @Test
     public void test01() {
-        MappingMetaData mappingMetaData = esConnection.getMapping("addmodel");
+        MappingMetaData mappingMetaData = esConnection.getMapping("addmodel","");
 
         Map<String, Object> sourceMap = mappingMetaData.getSourceAsMap();
         Map<String, Object> esMapping = (Map<String, Object>) sourceMap.get("properties");

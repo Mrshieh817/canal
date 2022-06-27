@@ -392,7 +392,7 @@ public class ES7xTemplate implements ESTemplate {
         if (fieldType != null) {
             return fieldType.get(fieldName);
         } else {
-            MappingMetaData mappingMetaData = esConnection.getMapping(mapping.get_index());
+            MappingMetaData mappingMetaData = esConnection.getMapping(mapping.get_index(),mapping.getMappings());
 
             if (mappingMetaData == null) {
                 throw new IllegalArgumentException("Not found the mapping info of index: " + mapping.get_index());

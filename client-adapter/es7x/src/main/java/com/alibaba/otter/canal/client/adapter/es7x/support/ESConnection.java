@@ -25,18 +25,22 @@ import org.elasticsearch.action.index.IndexRequestBuilder;
 import org.elasticsearch.action.search.SearchRequest;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.action.support.master.AcknowledgedResponse;
 import org.elasticsearch.action.update.UpdateRequest;
 import org.elasticsearch.action.update.UpdateRequestBuilder;
 import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.indices.CreateIndexRequest;
+import org.elasticsearch.client.indices.CreateIndexResponse;
 import org.elasticsearch.client.indices.GetMappingsRequest;
 import org.elasticsearch.client.indices.GetMappingsResponse;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.cluster.metadata.MappingMetaData;
 import org.elasticsearch.common.settings.Settings;
 import org.elasticsearch.common.transport.TransportAddress;
+import org.elasticsearch.common.xcontent.XContentType;
 import org.elasticsearch.index.query.QueryBuilder;
 import org.elasticsearch.rest.RestStatus;
 import org.elasticsearch.search.builder.SearchSourceBuilder;
@@ -106,7 +110,7 @@ public class ESConnection {
         }
     }
 
-    public MappingMetaData getMapping(String index) {
+    public MappingMetaData getMapping(String index,String mapping) {
         MappingMetaData mappingMetaData = null;
         if (mode == ESClientMode.TRANSPORT) {
             try {
@@ -124,25 +128,66 @@ public class ESConnection {
                 throw new IllegalArgumentException("Not found the mapping info of index: " + index);
             }
         } else {
-            Map<String, MappingMetaData> mappings;
+            Map<String, MappingMetaData> mappings=null;
             try {
-                GetMappingsRequest request = new GetMappingsRequest();
-                request.indices(index);
-                GetMappingsResponse response = restHighLevelClient.indices()
-                    .getMapping(request, RequestOptions.DEFAULT);
+//                GetMappingsRequest request = new GetMappingsRequest();
+//                request.indices(index);
+//                GetMappingsResponse response = restHighLevelClient.indices()
+//                    .getMapping(request, RequestOptions.DEFAULT);
+//                mappings = response.mappings();
+                mappings=getMappingMetaDataMap(index);
+                if (mappings == null){
+                    if (mapping == null || "".equals(mapping.trim())) {
+                        logger.info("没有检测到配置自定义mapping, 创建索引失败！");
+                    }
+                    logger.info("------------------------索引不存在，根据配置mapping自动创建索引------------------------");
+                    CreateIndexRequest createRequest = new CreateIndexRequest(index);
+                    //如果mapping不存在,进行本地配置mapping上传
+                    createRequest.mapping(mapping, XContentType.JSON);
+                    try {
+                       // AcknowledgedResponse acknowledgedResponse = restHighLevelClient.indices().create(createRequest, RequestOptions.DEFAULT);
+                        CreateIndexResponse acknowledgedResponse = restHighLevelClient.indices().create(createRequest, RequestOptions.DEFAULT);
+                        System.out.println(acknowledgedResponse.isAcknowledged());
+                        if (acknowledgedResponse.isAcknowledged()){
+                            mappings = getMappingMetaDataMap(index);
+                        }
+                    } catch (IOException ioException) {
+                        ioException.printStackTrace();
+                        logger.error(ioException.getMessage(), ioException);
+                    } catch (Exception exception) {
+                        exception.printStackTrace();
+                        logger.error(exception.getMessage(), exception);
+                    }
+                }
 
-                mappings = response.mappings();
             } catch (NullPointerException e) {
                 throw new IllegalArgumentException("Not found the mapping info of index: " + index);
-            } catch (IOException e) {
-                logger.error(e.getMessage(), e);
-                return null;
             }
             mappingMetaData = mappings.get(index);
         }
         return mappingMetaData;
     }
 
+
+    private Map<String, MappingMetaData> getMappingMetaDataMap(String index) {
+        Map<String, MappingMetaData> mappings = null;
+        try {
+            GetMappingsRequest request = new GetMappingsRequest();
+            request.indices(index);
+            GetMappingsResponse response = restHighLevelClient.indices()
+                    .getMapping(request, RequestOptions.DEFAULT);
+
+            mappings = response.mappings();
+        } catch (NullPointerException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        } catch (Exception exception) {
+            exception.printStackTrace();
+            logger.error(exception.getMessage());
+        }
+        return mappings;
+    }
     public class ES7xIndexRequest implements ESBulkRequest.ESIndexRequest {
 
         private IndexRequestBuilder indexRequestBuilder;

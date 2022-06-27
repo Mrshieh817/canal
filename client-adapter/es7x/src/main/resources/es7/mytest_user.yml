@@ -13,3 +13,19 @@ esMapping:
 #    _labels: array:;
   etlCondition: "where a.update_time>={}"
   commitBatch: 3000
+  mappings: "{
+                      \"properties\": {
+
+                          \"createTime\": {
+                              \"type\": \"date\"
+                          },
+                          \"number\": {
+                              \"type\": \"long\"
+                          },
+                          \"skuName\": {
+                              \"type\": \"text\",
+                              \"analyzer\": \"ik_max_word\",
+                              \"search_analyzer\": \"ik_smart\"
+                          }
+                      }
+                  }"
