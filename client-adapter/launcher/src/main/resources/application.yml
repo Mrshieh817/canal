@@ -1,3 +1,8 @@
+#需要配置canal的信息解析器(配置数据库订阅账号)，及canal.deployer(解析及监听数据库信息)，如果采用canal的admin管理后台，还需配置admin管理后台
+#此目录需要配置canal的模式,tcp或kafka为主流，然后就是配置数据库srcDataSources，defaultDS命名自己随意自定义
+#defaultDS命名自己随意自定义命名主要是为了区分使用哪个数据库，为在client-adapter的es7的yml里面指定数据库（及dataSourceKey的值），最后就是outerAdapters的配置，是存存储在ES还是其他地方
+#切记打包顺序 ：1.先install项目client包====》项目connector包====>最后adapter包,adapter打包主要是将其他一来模块的信息打包进项目文件夹里面，便于运行
+
 server:
   port: 8081
 spring:
@@ -7,7 +12,7 @@ spring:
     default-property-inclusion: non_null
 
 canal.conf:
-  mode: tcp #tcp kafka rocketMQ rabbitMQ
+  mode: kafka #tcp kafka rocketMQ rabbitMQ
   flatMessage: true
   zookeeperHosts:
   syncBatchSize: 1000
@@ -17,13 +22,13 @@ canal.conf:
   secretKey:
   consumerProperties:
     # canal tcp consumer
-    canal.tcp.server.host: 127.0.0.1:11111
+    canal.tcp.server.host: 192.168.10.117.1:11111
     canal.tcp.zookeeper.hosts:
     canal.tcp.batch.size: 500
     canal.tcp.username:
     canal.tcp.password:
     # kafka consumer
-    kafka.bootstrap.servers: 127.0.0.1:9092
+    kafka.bootstrap.servers: 192.168.10.117:9092
     kafka.enable.auto.commit: false
     kafka.auto.commit.interval.ms: 1000
     kafka.auto.offset.reset: latest
@@ -46,17 +51,17 @@ canal.conf:
     rabbitmq.password:
     rabbitmq.resource.ownerId:
 
-#  srcDataSources:
-#    defaultDS:
-#      url: jdbc:mysql://127.0.0.1:3306/mytest?useUnicode=true
-#      username: root
-#      password: 121212
+  srcDataSources:
+    Movie:
+      url: jdbc:mysql://192.168.42.128:3306/Movie?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Shanghai&useSSL=false&allowMultiQueries=true&zeroDateTimeBehavior=CONVERTTONULL
+      username: root
+      password: Root-123
   canalAdapters:
-  - instance: example # canal instance Name or mq topic name
+  - instance: Movie # canal instance Name or mq topic name
     groups:
     - groupId: g1
       outerAdapters:
-      - name: logger
+      #- name: logger
 #      - name: rdb
 #        key: mysql1
 #        properties:
@@ -87,12 +92,13 @@ canal.conf:
 #          hbase.zookeeper.quorum: 127.0.0.1
 #          hbase.zookeeper.property.clientPort: 2181
 #          zookeeper.znode.parent: /hbase
-#      - name: es
-#        hosts: 127.0.0.1:9300 # 127.0.0.1:9200 for rest mode
-#        properties:
-#          mode: transport # or rest
-#          # security.auth: test:123456 #  only used for rest mode
-#          cluster.name: elasticsearch
+      - name: es7
+        key: flyTest
+        hosts: http://192.168.10.117:9200 # 127.0.0.1:9200 for rest mode
+        properties:
+          mode: rest # or rest
+          # security.auth: test:123456 #  only used for rest mode
+          cluster.name: my-application
 #      - name: kudu
 #        key: kudu
 #        properties:

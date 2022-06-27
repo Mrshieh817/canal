@@ -20,7 +20,7 @@
         <java_source_version>1.8</java_source_version>
         <java_target_version>1.8</java_target_version>
         <file_encoding>UTF-8</file_encoding>
-        <spring.version>5.3.14</spring.version>
+        <spring.version>5.0.5.RELEASE</spring.version>
     </properties>
 
     <modules>

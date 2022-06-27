@@ -19,15 +19,15 @@ public class ESConnectionTest {
 
     @Before
     public void init() throws UnknownHostException {
-        String[] hosts = new String[] { "127.0.0.1:9200" };
+        String[] hosts = new String[] { "http://192.168.10.117:9200" };
         Map<String, String> properties = new HashMap<>();
-        properties.put("cluster.name", "elasticsearch");
+        properties.put("cluster.name", "my-application");
         esConnection = new ESConnection(hosts, properties, ESConnection.ESClientMode.REST);
     }
 
     @Test
     public void test01() {
-        MappingMetaData mappingMetaData = esConnection.getMapping("mytest_user");
+        MappingMetaData mappingMetaData = esConnection.getMapping("addmodel");
 
         Map<String, Object> sourceMap = mappingMetaData.getSourceAsMap();
         Map<String, Object> esMapping = (Map<String, Object>) sourceMap.get("properties");
