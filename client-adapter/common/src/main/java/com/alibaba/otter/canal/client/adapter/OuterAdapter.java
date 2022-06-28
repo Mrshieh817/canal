@@ -67,4 +67,21 @@ public interface OuterAdapter {
     default String getDestination(String task) {
         return null;
     }
+
+    /**
+     * 获取配置文件的时间表达式corn
+     * @param task 任务名, 对应配置名
+     * @return
+     */
+    default String getCorn(String task) {
+        return null;
+    }
+
+    /**
+     * 加载es7的yml配置文件
+     * @return
+     */
+    default List<String> getEsConfigList() {
+        return null;
+    }
 }

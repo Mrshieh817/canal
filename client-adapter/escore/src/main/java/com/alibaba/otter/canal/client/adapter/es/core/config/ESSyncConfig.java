@@ -27,6 +27,8 @@ public class ESSyncConfig implements AdapterConfig {
 
     private String    esVersion = "es6";
 
+    private String    corn;
+
     public void validate() {
         if (esMapping._index == null) {
             throw new NullPointerException("esMapping._index");
@@ -92,6 +94,14 @@ public class ESSyncConfig implements AdapterConfig {
 
     public void setEsVersion(String esVersion) {
         this.esVersion = esVersion;
+    }
+
+    public String getCorn() {
+        return corn;
+    }
+
+    public void setCorn(String corn) {
+        this.corn = corn;
     }
 
     public static class ESMapping implements AdapterMapping {

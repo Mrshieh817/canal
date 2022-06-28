@@ -2,20 +2,23 @@ dataSourceKey: Movie
 destination: Movie
 outerAdapterKey: flyTest
 groupId: g1
+corn: "0/3 * * * * ?"
 esMapping:
   #es索引名称
   _index: addmodel
   upsert: true
   _id: id
 #  pk: id
-  sql: "SELECT  a.id as id, a.id as number,a.`name` as skuName,a.update_time as createTime,'666' as _class from sys_user a "
+  sql: "SELECT  a.id as id, a.id as number,a.`name` as skuName,a.update_time as createTime,'666' as _class,now() as '@timestamp' from sys_user a "
 #  objFields:
 #    _labels: array:;
   etlCondition: "where a.update_time>={}"
   commitBatch: 3000
   mappings: "{
                       \"properties\": {
-
+                            \"@timestamp\": {
+                                 \"type\": \"date\"
+                             },
                           \"createTime\": {
                               \"type\": \"date\"
                           },
